@@ -45,16 +45,20 @@ public class GamificationService {
             if (user.getUnlockedAchievements().contains(ach)) continue;
 
             boolean unlocked = false;
-            String desc = ach.getDescription().toLowerCase();
 
-            if (desc.contains("task") || desc.contains("tasks")) {
-                if (completedTasksCount >= ach.getConditionValue()) unlocked = true;
-            }
-            else if (desc.contains("level")) {
-                if (user.getCurrentLevel() >= ach.getConditionValue()) unlocked = true;
-            }
-            else if (desc.contains("xp")) {
-                if (user.getCurrentXp() >= ach.getConditionValue()) unlocked = true;
+            switch (ach.getCriteriaType()) {
+                case "TASK_COUNT":
+                    if (completedTasksCount >= ach.getConditionValue()) unlocked = true;
+                    break;
+                case "LEVEL_THRESHOLD":
+                    if (user.getCurrentLevel() >= ach.getConditionValue()) unlocked = true;
+                    break;
+                case "XP_TOTAL":
+                    if (user.getCurrentXp() >= ach.getConditionValue()) unlocked = true;
+                    break;
+                case "STREAK_DAYS":
+                    if (user.getStreak() >= ach.getConditionValue()) unlocked = true;
+                    break;
             }
 
             if (unlocked) {

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,6 +27,6 @@ public class UserTask {
     @ColumnDefault("'PENDING'")
     private String status = "PENDING";
 
-    private LocalDateTime assignedAt = LocalDateTime.now();
+    private LocalDate assignedDate = LocalDate.now();
     private LocalDateTime completedAt;
 }

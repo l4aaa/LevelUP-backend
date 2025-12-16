@@ -17,5 +17,8 @@ public class Achievement {
 
     private String description;
 
+    @Column(nullable = false)
+    private String criteriaType;
+
     private Integer conditionValue;
 }

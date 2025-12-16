@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate; // Import needed for conversion
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,11 @@ public class UserController {
                 .map(Achievement::getId)
                 .collect(Collectors.toList());
 
+        // FIX: Convert the new LocalDateTime (DB) to LocalDate (DTO)
+        LocalDate loginDate = (user.getLastLoginAt() != null)
+                ? user.getLastLoginAt().toLocalDate()
+                : null;
+
         UserDTO dto = new UserDTO(
                 user.getId(),
                 user.getUsername(),
@@ -47,7 +53,7 @@ public class UserController {
                 user.getCurrentXp(),
                 user.getStreak(),
                 user.getStudyProgram() != null ? user.getStudyProgram().getName() : null,
-                user.getLastLoginDate(),
+                loginDate, // Pass the converted date here
                 unlockedIds
         );
 
@@ -70,7 +76,7 @@ public class UserController {
                         u.getCurrentXp(),
                         u.getStreak(),
                         null,
-                        null,
+                        null, // lastLoginDate is null in leaderboard view
                         null
                 ))
                 .toList());

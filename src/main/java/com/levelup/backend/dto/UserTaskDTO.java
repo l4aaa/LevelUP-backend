@@ -4,6 +4,7 @@ import com.levelup.backend.entity.UserTask;
 import lombok.Builder;
 import lombok.Value;
 
+import java.time.LocalDate;       // Changed from LocalDateTime
 import java.time.LocalDateTime;
 
 @Value
@@ -11,7 +12,10 @@ import java.time.LocalDateTime;
 public class UserTaskDTO {
     Long userTaskId;
     String status;
-    LocalDateTime assignedAt;
+
+    // CHANGED: Rename field and type to match Entity
+    LocalDate assignedDate;
+
     LocalDateTime completedAt;
     TaskDetailDTO task;
 
@@ -19,7 +23,10 @@ public class UserTaskDTO {
         return UserTaskDTO.builder()
                 .userTaskId(userTask.getId())
                 .status(userTask.getStatus())
-                .assignedAt(userTask.getAssignedAt())
+
+                // CHANGED: Call the new getter method
+                .assignedDate(userTask.getAssignedDate())
+
                 .completedAt(userTask.getCompletedAt())
                 .task(TaskDetailDTO.fromEntity(userTask.getTask()))
                 .build();

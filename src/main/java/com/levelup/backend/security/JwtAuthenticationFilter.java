@@ -37,10 +37,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = parseJwt(request);
             if (token != null && jwtUtils.validateJwtToken(token)) {
                 String username = jwtUtils.getUsernameFromJwtToken(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(auth);
+
+                try {
+                    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken auth =
+                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+                    logger.warn("User " + username + " not found in database, ignoring token.");
+                }
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication", e);

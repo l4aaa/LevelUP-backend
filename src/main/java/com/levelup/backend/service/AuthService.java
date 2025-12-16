@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime; // Changed to LocalDateTime for Hybrid Schema
 import java.util.List;
 
 @Service
@@ -59,7 +60,10 @@ public class AuthService {
         user.setStudyProgram(sp);
         user.setCurrentXp(0);
         user.setCurrentLevel(1);
-        user.setLastLoginDate(LocalDate.now());
+
+        // UPDATED: Use LocalDateTime for the new schema
+        user.setLastLoginAt(LocalDateTime.now());
+
         user = userRepo.save(user);
 
         List<Task> initialTasks = taskRepo.findByStudyProgramIdOrStudyProgramIsNull(sp.getId());
@@ -69,6 +73,7 @@ public class AuthService {
             assignment.setUser(user);
             assignment.setTask(task);
             assignment.setStatus("PENDING");
+            assignment.setAssignedDate(LocalDate.now());
             userTaskRepo.save(assignment);
         }
 
@@ -84,21 +89,37 @@ public class AuthService {
 
         User user = userRepo.findByUsername(req.getUsername()).orElseThrow();
 
-        if (user.getLastLoginDate() != null && user.getLastLoginDate().isBefore(LocalDate.now())) {
+        LocalDateTime lastLoginTs = user.getLastLoginAt();
+        LocalDate today = LocalDate.now();
+
+        // Check if user has logged in before, and if that login was strictly before today
+        if (lastLoginTs != null && lastLoginTs.toLocalDate().isBefore(today)) {
 
             List<UserTask> tasks = userTaskRepo.findByUserId(user.getId());
             for (UserTask ut : tasks) {
                 ut.setStatus("PENDING");
                 ut.setCompletedAt(null);
+                ut.setAssignedDate(today); // Move task date to today
                 userTaskRepo.save(ut);
             }
 
-            if (user.getLastLoginDate().isBefore(LocalDate.now().minusDays(1))) {
-                user.setStreak(0);
+            // 2. Streak Logic
+            LocalDate lastLoginDate = lastLoginTs.toLocalDate();
+
+            if (lastLoginDate.isBefore(today.minusDays(1))) {
+                user.setStreak(1);
+            } else {
+                user.setStreak(user.getStreak() + 1);
             }
         }
+        else if (lastLoginTs == null) {
+            user.setStreak(1); // First login ever
+        }
 
-        user.setLastLoginDate(LocalDate.now());
+        // --- END OF YOUR LOGIC ---
+
+        // Update last login to NOW (Timestamp)
+        user.setLastLoginAt(LocalDateTime.now());
         userRepo.save(user);
 
         String token = jwtUtils.generateToken(user.getUsername());

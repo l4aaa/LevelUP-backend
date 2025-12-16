@@ -3,7 +3,7 @@ package com.levelup.backend.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
@@ -27,7 +27,7 @@ public class User {
     private Integer currentXp = 0;
     private Integer currentLevel = 1;
     private Integer streak = 0;
-    private LocalDate lastLoginDate;
+    private LocalDateTime lastLoginAt;
 
     @ManyToOne
     @JoinColumn(name = "study_program_id")
