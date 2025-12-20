@@ -2,6 +2,7 @@ package com.levelup.backend.dto;
 
 import com.levelup.backend.entity.UserTask;
 import com.levelup.backend.entity.User;
+import com.levelup.backend.entity.Achievement;
 import lombok.Builder;
 import lombok.Value;
 
@@ -17,18 +18,15 @@ public class DashboardDTO {
     Integer xpToNextLevel;
     Integer streak;
     String studyProgramName;
-
     List<UserTaskDTO> tasks;
+    List<Long> unlockedAchievementIds;
 
     public static DashboardDTO fromUserAndTasks(User user, List<UserTask> userTasks) {
         final int xpRequired = 100;
         final int currentXp = user.getCurrentXp();
 
-
         int xpSinceLastLevel = currentXp % xpRequired;
         int xpToNext = xpRequired - xpSinceLastLevel;
-
-
         if (xpToNext == 0 && currentXp > 0) {
             xpToNext = xpRequired;
         }
@@ -42,6 +40,9 @@ public class DashboardDTO {
                 .studyProgramName(user.getStudyProgram() != null ? user.getStudyProgram().getName() : "N/A")
                 .tasks(userTasks.stream()
                         .map(UserTaskDTO::fromEntity)
+                        .collect(Collectors.toList()))
+                .unlockedAchievementIds(user.getUnlockedAchievements().stream()
+                        .map(Achievement::getId)
                         .collect(Collectors.toList()))
                 .build();
     }
