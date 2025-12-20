@@ -25,10 +25,8 @@ public class AuthService {
     private UserRepository userRepo;
     @Autowired
     private StudyProgramRepository studyProgramRepo;
-
     @Autowired
     private TaskService taskService;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -77,7 +75,6 @@ public class AuthService {
         LocalDate today = LocalDate.now();
 
         if (lastLoginTs != null && lastLoginTs.toLocalDate().isBefore(today)) {
-
             taskService.cleanupPendingTasks(user.getId());
             taskService.assignDailyTasks(user);
 

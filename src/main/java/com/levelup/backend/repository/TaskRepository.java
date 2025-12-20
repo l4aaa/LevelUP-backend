@@ -18,5 +18,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             "ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
     List<Task> findRandomTasks(@Param("programId") Long programId, @Param("limit") int limit);
 
+    @Query(value = "SELECT * FROM tasks t WHERE t.study_program_id = :programId ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
+    List<Task> findRandomTasksByProgram(@Param("programId") Long programId, @Param("limit") int limit);
+
+    @Query(value = "SELECT * FROM tasks t WHERE t.study_program_id IS NULL ORDER BY RANDOM() LIMIT :limit", nativeQuery = true)
+    List<Task> findRandomGlobalTasks(@Param("limit") int limit);
+
     List<Task> findByCategoryIgnoreCase(String category);
 }

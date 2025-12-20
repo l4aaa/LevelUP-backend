@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -22,14 +24,28 @@ public class TaskService {
     private UserTaskRepository userTaskRepo;
 
     private static final int DAILY_TASK_LIMIT = 8;
+    private static final int MIN_PROGRAM_TASKS = 4;
 
     @Transactional
     public void assignDailyTasks(User user) {
         Long studyProgramId = (user.getStudyProgram() != null) ? user.getStudyProgram().getId() : null;
+        List<Task> selectedTasks = new ArrayList<>();
 
-        List<Task> randomTasks = taskRepo.findRandomTasks(studyProgramId, DAILY_TASK_LIMIT);
+        if (studyProgramId != null) {
+            List<Task> programTasks = taskRepo.findRandomTasksByProgram(studyProgramId, MIN_PROGRAM_TASKS);
+            selectedTasks.addAll(programTasks);
+        }
 
-        for (Task task : randomTasks) {
+        int remainingSlots = DAILY_TASK_LIMIT - selectedTasks.size();
+
+        if (remainingSlots > 0) {
+            List<Task> globalTasks = taskRepo.findRandomGlobalTasks(remainingSlots);
+            selectedTasks.addAll(globalTasks);
+        }
+
+        Collections.shuffle(selectedTasks);
+
+        for (Task task : selectedTasks) {
             UserTask assignment = new UserTask();
             assignment.setUser(user);
             assignment.setTask(task);

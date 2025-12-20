@@ -21,13 +21,16 @@ public class GamificationService {
     @Autowired
     private UserTaskRepository userTaskRepo;
 
+    public static final int XP_PER_LEVEL = 100;
+
     @Transactional
     public void processRewards(Long userId, Integer xpGained) {
-        User user = userRepo.findById(userId).orElseThrow();
+        User user = userRepo.findByIdWithLock(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         user.setCurrentXp(user.getCurrentXp() + xpGained);
 
-        int newLevel = (user.getCurrentXp() / 100) + 1;
+        int newLevel = (user.getCurrentXp() / XP_PER_LEVEL) + 1;
         if (newLevel > user.getCurrentLevel()) {
             user.setCurrentLevel(newLevel);
         }
@@ -45,7 +48,6 @@ public class GamificationService {
             if (user.getUnlockedAchievements().contains(ach)) continue;
 
             boolean unlocked = false;
-
             switch (ach.getCriteriaType()) {
                 case "TASK_COUNT":
                     if (completedTasksCount >= ach.getConditionValue()) unlocked = true;

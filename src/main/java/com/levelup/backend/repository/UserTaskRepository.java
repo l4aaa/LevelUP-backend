@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,4 +28,9 @@ public interface UserTaskRepository extends JpaRepository<UserTask, Long> {
     @Modifying
     @Query("DELETE FROM UserTask u WHERE u.user.id = :userId AND u.status = 'PENDING'")
     void deletePendingTasksByUserId(@Param("userId") Long userId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE UserTask u SET u.status = 'PENDING' WHERE u.status = 'VERIFYING'")
+    int resetStuckTasks();
 }

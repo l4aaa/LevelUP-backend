@@ -3,6 +3,7 @@ package com.levelup.backend.dto;
 import com.levelup.backend.entity.UserTask;
 import com.levelup.backend.entity.User;
 import com.levelup.backend.entity.Achievement;
+import com.levelup.backend.service.GamificationService;
 import lombok.Builder;
 import lombok.Value;
 
@@ -22,7 +23,7 @@ public class DashboardDTO {
     List<Long> unlockedAchievementIds;
 
     public static DashboardDTO fromUserAndTasks(User user, List<UserTask> userTasks) {
-        final int xpRequired = 100;
+        final int xpRequired = GamificationService.XP_PER_LEVEL;
         final int currentXp = user.getCurrentXp();
 
         int xpSinceLastLevel = currentXp % xpRequired;
