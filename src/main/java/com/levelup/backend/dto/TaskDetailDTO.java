@@ -9,12 +9,15 @@ import lombok.Value;
 public class TaskDetailDTO {
     Long id;
     String title;
+    String description;
     String category;
     Integer xpReward;
+
     public static TaskDetailDTO fromEntity(Task task) {
         return TaskDetailDTO.builder()
                 .id(task.getId())
                 .title(task.getTitle())
+                .description(task.getDescription())
                 .category(task.getCategory())
                 .xpReward(task.getXpReward())
                 .build();
