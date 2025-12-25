@@ -60,7 +60,7 @@ public class AuthService {
         taskService.assignDailyTasks(user);
 
         String token = jwtUtils.generateToken(user.getUsername());
-        return new AuthResponse(token, user.getUsername(), user.getId());
+        return new AuthResponse(token, user.getUsername(), user.getId(), user.getRole());
     }
 
     @Transactional
@@ -93,6 +93,6 @@ public class AuthService {
         userRepo.save(user);
 
         String token = jwtUtils.generateToken(user.getUsername());
-        return new AuthResponse(token, user.getUsername(), user.getId());
+        return new AuthResponse(token, user.getUsername(), user.getId(), user.getRole());
     }
 }

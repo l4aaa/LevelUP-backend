@@ -40,4 +40,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "achievement_id")
     )
     private Set<Achievement> unlockedAchievements;
+
+    @Column(nullable = false)
+    private String role = "USER";
 }
